@@ -1,0 +1,140 @@
+{
+	"name": "CopyDatapipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data Storage to DB",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Destination",
+						"value": "dbo.Productdetails"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Product_Name"
+								},
+								"sink": {
+									"name": "Product_Name"
+								}
+							},
+							{
+								"source": {
+									"name": "Product_ID"
+								},
+								"sink": {
+									"name": "Product_ID"
+								}
+							},
+							{
+								"source": {
+									"name": "Product_issue_date"
+								},
+								"sink": {
+									"name": "Product_issue_date"
+								}
+							},
+							{
+								"source": {
+									"name": "Product_expiry_date"
+								},
+								"sink": {
+									"name": "Product_expiry_date"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SourceDataStoragewithparameter",
+						"type": "DatasetReference",
+						"parameters": {
+							"Filename": {
+								"value": "@pipeline().parameters.filename",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DestinationDataDB",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Stored procedure for duplicate records",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data Storage to DB",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[deleteduplicate]"
+				},
+				"linkedServiceName": {
+					"referenceName": "SqlServerdb",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-02-12T14:01:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,9 @@
+{
+	"name": "firstadf2022",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "b9ed1428-ff90-43d6-8721-b6c4a79658b2",
+		"tenantId": "7eb655b1-7fe2-48d3-ae9f-425d4fcedde9"
+	}
+}

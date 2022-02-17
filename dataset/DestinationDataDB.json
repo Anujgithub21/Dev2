@@ -1,0 +1,34 @@
+{
+	"name": "DestinationDataDB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SqlServerdb",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Product_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Product_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Product_issue_date",
+				"type": "varchar"
+			},
+			{
+				"name": "Product_expiry_date",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Productdetails"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

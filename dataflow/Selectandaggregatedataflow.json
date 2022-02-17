@@ -1,0 +1,35 @@
+{
+	"name": "Selectandaggregatedataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureblobsourceEmployee",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DestincationStorage",
+						"type": "DatasetReference"
+					},
+					"name": "destination"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Selectcolumnonly"
+				},
+				{
+					"name": "Departmentbycount"
+				}
+			],
+			"script": "source(output(\n\t\tEmpID as string,\n\t\tEmpName as string,\n\t\tDepartmentID as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource1 select(mapColumn(\n\t\tEmpID,\n\t\tEmpName,\n\t\tDepartmentID\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Selectcolumnonly\nSelectcolumnonly aggregate(groupBy(DepartmentID),\n\tempcount = count(EmpID),\n\tpartitionBy('hash', 1)) ~> Departmentbycount\nDepartmentbycount sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tfilePattern:'destincationfile.csv',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> destination"
+		}
+	}
+}
