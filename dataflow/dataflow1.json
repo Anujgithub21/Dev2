@@ -1,0 +1,37 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureblobsourceEmployee",
+						"type": "DatasetReference"
+					},
+					"name": "Employeedetails"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzurebolobsoruceEmpdepart",
+						"type": "DatasetReference"
+					},
+					"name": "Emplyeedepartment"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "Join1"
+				},
+				{
+					"name": "Selectedcolumn"
+				},
+				{
+					"name": "HRdata"
+				}
+			],
+			"script": "source(output(\n\t\tEmpID as string,\n\t\tEmpName as string,\n\t\tDepartmentID as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Employeedetails\nsource(output(\n\t\tDepartmentID as string,\n\t\tDepartName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Emplyeedepartment\nEmployeedetails, Emplyeedepartment join(Employeedetails@DepartmentID == Emplyeedepartment@DepartmentID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1 select(mapColumn(\n\t\tEmpID,\n\t\tEmpName,\n\t\tCountry,\n\t\tDepartName\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Selectedcolumn\nSelectedcolumn split(equals(DepartName, \"HR\"),\n\tequals(DepartName, \"IT\"),\n\tdisjoint: false,\n\tpartitionBy('hash', 1)) ~> HRdata@(HRdataonly, ITData)"
+		}
+	}
+}
