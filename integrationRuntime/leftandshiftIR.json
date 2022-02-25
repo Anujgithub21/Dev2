@@ -1,0 +1,27 @@
+{
+	"name": "leftandshiftIR",
+	"properties": {
+		"type": "Managed",
+		"typeProperties": {
+			"computeProperties": {
+				"location": "Central India",
+				"nodeSize": "Standard_D8_v3",
+				"numberOfNodes": 1,
+				"maxParallelExecutionsPerNode": 1
+			},
+			"ssisProperties": {
+				"catalogInfo": {
+					"catalogServerEndpoint": "azureserver2022.database.windows.net",
+					"catalogAdminUserName": "dblog",
+					"catalogAdminPassword": {
+						"type": "SecureString",
+						"value": "**********"
+					},
+					"catalogPricingTier": "Basic"
+				},
+				"edition": "Standard",
+				"licenseType": "LicenseIncluded"
+			}
+		}
+	}
+}
